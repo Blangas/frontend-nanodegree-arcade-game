@@ -10,7 +10,7 @@ class Enemy {
     this.sprite = 'images/enemy-bug-red.png';
     this.x = x;
     this.y = y;
-    this.speed = 40;
+    this.speed = 100;
   }
 
   // Update the enemy's position, required method for game
@@ -19,7 +19,15 @@ class Enemy {
     // You should multiply any movement by the dt parameter
     // which will ensure the game runs at the same speed for
     // all computers.
-    this.x = this.x + dt * 40;
+    this.x = this.x + dt * this.speed;
+    if (this.x > 909) {
+      for (let i = 0; i < allEnemies.length; i++) {
+        if (allEnemies[i].x > 909) {
+          allEnemies.splice(i, 1);
+          break;
+        }
+      }
+    }
   }
 
   // Draw the enemy on the screen, required method for game
@@ -39,10 +47,10 @@ class Player {
   }
 
   handleInput(key) {
-    if (key === 'left') {this.x = this.x - 101;}
-    if (key === 'up') {this.y = this.y - 83;}
-    if (key === 'right') {this.x = this.x + 101;}
-    if (key === 'down') {this.y = this.y +83;}
+    if (key === 'left' && this.x >= 101) {this.x = this.x - 101;}
+    if (key === 'up' && this.y >= 0) {this.y = this.y - 83;}
+    if (key === 'right' && this.x <= 707) {this.x = this.x + 101;}
+    if (key === 'down' && this.y <= 477) {this.y = this.y +83;}
   }
 
   update() {
