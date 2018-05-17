@@ -20,6 +20,8 @@ class Enemy {
     // which will ensure the game runs at the same speed for
     // all computers.
     this.x = this.x + dt * this.speed;
+
+    // check if enemy is off screen, then find it in array and delete it
     if (this.x > 909) {
       for (let i = 0; i < allEnemies.length; i++) {
         if (allEnemies[i].x > 909) {
@@ -59,6 +61,17 @@ class Player {
 
   render() {
     ctx.drawImage(Resources.get(this.sprite), this.x, this.y);
+  }
+}
+
+function checkCollisions() {
+  for (enemy of allEnemies) {
+    let diffY = player.y - enemy.y;
+    let diffX = player.x - enemy.x;
+    if (-60 < diffY && diffY < 60 && -50 < diffX && diffX < 70) {
+      player.x = 404;
+      player.y = 560;
+    }
   }
 }
 
