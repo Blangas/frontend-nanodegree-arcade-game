@@ -10,7 +10,7 @@ class Enemy {
     this.sprite = 'images/enemy-bug-red.png';
     this.x = x;
     this.y = y;
-    this.speed = 100;
+    this.speed = Math.random() * 40 + 60;
   }
 
   // Update the enemy's position, required method for game
@@ -36,6 +36,28 @@ class Enemy {
   render() {
     ctx.drawImage(Resources.get(this.sprite), this.x, this.y);
   }
+}
+
+class EnemyFast extends Enemy {
+  constructor(x, y) {
+    super(x, y);
+    this.sprite = 'images/enemy-bug-green.png';
+    this.speed = Math.random() * 100 + 140;
+  }
+
+  update(dt) { super.update(dt); }
+  render() { super.render(); }
+}
+
+class EnemySlow extends Enemy {
+  constructor(x, y) {
+    super(x, y);
+    this.sprite = 'images/enemy-bug-blue.png';
+    this.speed = Math.random() * 40 + 10;
+  }
+
+  update(dt) { super.update(dt); }
+  render() { super.render(); }
 }
 
 // Now write your own player class
@@ -80,8 +102,16 @@ function checkCollisions() {
 // Place all enemy objects in an array called allEnemies
 var allEnemies = [];
 function spawnEnemies() {
-  const line = Math.floor(Math.random() * 6) * 83 + 57;
-  const newEnemy = new Enemy(-101, line);
+  const randomEnemy = Math.floor(Math.random() * 10);
+  const randomLine = Math.floor(Math.random() * 6) * 83 + 57;
+  let newEnemy;
+  if (randomEnemy <= 5) {
+    newEnemy = new Enemy(-101, randomLine);
+  } else if (randomEnemy <= 8) {
+    newEnemy = new EnemyFast(-101, randomLine);
+  } else {
+    newEnemy = new EnemySlow(-101, randomLine);
+  }
   allEnemies.push(newEnemy);
 }
 var spawning = window.setInterval(spawnEnemies, 2000);
