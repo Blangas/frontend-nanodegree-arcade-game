@@ -159,6 +159,7 @@ var Engine = (function(global) {
             enemy.render();
         });
 
+        gate.render();
         star.render();
         player.render();
     }

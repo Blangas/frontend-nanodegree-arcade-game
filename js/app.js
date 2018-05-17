@@ -98,7 +98,9 @@ class Player {
   }
 
   update() {
-
+    if (this.y < 0 && this.x !== gate.x) {
+      lost();
+    }
   }
 
   render() {
@@ -146,6 +148,24 @@ class Star {
   }
 }
 
+// level finish doors
+class Gate {
+  constructor(x) {
+    this.sprite = 'images/selector.png';
+    this.x = x;
+    this.y = -40;
+  }
+
+  update() {
+  }
+
+  render() {
+    if (star.picked) {
+      ctx.drawImage(Resources.get(this.sprite), this.x, this.y);
+    }
+  }
+}
+
 // function to check if player not colliding with rock, used in player.handleInput()
 function rockCollide() {
   for (rock of allRocks) {
@@ -157,14 +177,13 @@ function rockCollide() {
   }
 }
 
+// player and enemy collision
 function checkCollisions() {
   for (enemy of allEnemies) {
     let diffY = player.y - enemy.y;
     let diffX = player.x - enemy.x;
     if (-60 < diffY && diffY < 60 && -50 < diffX && diffX < 70) {
-      player.x = 404;
-      player.y = 560;
-      createStar();
+      lost();
     }
   }
 }
@@ -173,8 +192,9 @@ function checkCollisions() {
 // Now instantiate your objects.
 var allRocks = [];
 function spawnRocks() {
+  allRocks = [];
   for (let i = 0; i < 6; i++) {
-    const randomRow = Math.floor(Math.random() * 6) * 83 + 57;
+    const randomRow = Math.floor(Math.random() * 5) * 83 + 140;
     const randomCol = Math.floor(Math.random() * 9) * 101;
     const newRock = new Rock(randomCol, randomRow);
     allRocks.push(newRock);
@@ -197,7 +217,7 @@ function spawnEnemies() {
   }
   allEnemies.push(newEnemy);
 }
-var spawning = window.setInterval(spawnEnemies, 2000);
+var spawning = window.setInterval(spawnEnemies, 1000);
 
 // Place the player object in a variable called player
 var player = new Player();
@@ -216,6 +236,26 @@ function createStar() {
   }
 }
 createStar();
+
+var gate;
+function createGate() {
+  const randomCol = Math.floor(Math.random() * 9) * 101;
+  gate = new Gate(randomCol);
+}
+createGate();
+
+
+function won() {
+
+}
+
+function lost() {
+  player.x = 404;
+  player.y = 560;
+  spawnRocks();
+  createStar();
+}
+
 
 // This listens for key presses and sends the keys to your
 // Player.handleInput() method. You don't need to modify this.
