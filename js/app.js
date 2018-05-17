@@ -71,10 +71,30 @@ class Player {
   }
 
   handleInput(key) {
-    if (key === 'left' && this.x >= 101) {this.x = this.x - 101;}
-    if (key === 'up' && this.y >= 0) {this.y = this.y - 83;}
-    if (key === 'right' && this.x <= 707) {this.x = this.x + 101;}
-    if (key === 'down' && this.y <= 477) {this.y = this.y +83;}
+    if (key === 'left' && this.x >= 101) {
+      this.x = this.x - 101;
+      if (rockCollide()) {
+        this.x = this.x + 101;
+      }
+    }
+    if (key === 'up' && this.y >= 0) {
+      this.y = this.y - 83;
+      if (rockCollide()) {
+        this.y = this.y + 83;
+      }
+    }
+    if (key === 'right' && this.x <= 707) {
+      this.x = this.x + 101;
+      if (rockCollide()) {
+        this.x = this.x - 101;
+      }
+    }
+    if (key === 'down' && this.y <= 477) {
+      this.y = this.y +83;
+      if (rockCollide()) {
+        this.y = this.y - 83;
+      }
+    }
   }
 
   update() {
@@ -86,6 +106,57 @@ class Player {
   }
 }
 
+//rock obstacles
+class Rock {
+  constructor(x, y) {
+    this.sprite = 'images/rock.png';
+    this.x = x;
+    this.y = y;
+  }
+
+  render() {
+    ctx.drawImage(Resources.get(this.sprite), this.x, this.y);
+  }
+}
+
+// star pickup
+class Star {
+  constructor(x, y) {
+    this.sprite = 'images/star.png';
+    this.x = x;
+    this.y = y;
+    this.picked = false;
+  }
+
+  update() {
+    if (!this.picked) {
+      let diffY = player.y - star.y;
+      let diffX = player.x - star.x;
+      if (-60 < diffY && diffY < 60 && -50 < diffX && diffX < 70) {
+        this.picked = true;
+      }
+    } else {
+      this.x = player.x;
+      this.y = player.y;
+    }
+  }
+
+  render() {
+    ctx.drawImage(Resources.get(this.sprite), this.x, this.y);
+  }
+}
+
+// function to check if player not colliding with rock, used in player.handleInput()
+function rockCollide() {
+  for (rock of allRocks) {
+    let diffY = player.y - rock.y;
+    let diffX = player.x - rock.x;
+    if (-60 < diffY && diffY < 60 && -50 < diffX && diffX < 70) {
+      return true;
+    }
+  }
+}
+
 function checkCollisions() {
   for (enemy of allEnemies) {
     let diffY = player.y - enemy.y;
@@ -93,12 +164,24 @@ function checkCollisions() {
     if (-60 < diffY && diffY < 60 && -50 < diffX && diffX < 70) {
       player.x = 404;
       player.y = 560;
+      createStar();
     }
   }
 }
 
 
 // Now instantiate your objects.
+var allRocks = [];
+function spawnRocks() {
+  for (let i = 0; i < 6; i++) {
+    const randomRow = Math.floor(Math.random() * 6) * 83 + 57;
+    const randomCol = Math.floor(Math.random() * 9) * 101;
+    const newRock = new Rock(randomCol, randomRow);
+    allRocks.push(newRock);
+  }
+}
+spawnRocks();
+
 // Place all enemy objects in an array called allEnemies
 var allEnemies = [];
 function spawnEnemies() {
@@ -115,9 +198,24 @@ function spawnEnemies() {
   allEnemies.push(newEnemy);
 }
 var spawning = window.setInterval(spawnEnemies, 2000);
+
 // Place the player object in a variable called player
 var player = new Player();
 
+var star;
+function createStar() {
+  const randomRow = Math.floor(Math.random() * 6) * 83 + 57;
+  const randomCol = Math.floor(Math.random() * 9) * 101;
+  star = new Star(randomCol, randomRow);
+  for (rock of allRocks) {
+    let diffY = star.y - rock.y;
+    let diffX = star.x - rock.x;
+    if (-60 < diffY && diffY < 60 && -50 < diffX && diffX < 70) {
+      createStar();
+    }
+  }
+}
+createStar();
 
 // This listens for key presses and sends the keys to your
 // Player.handleInput() method. You don't need to modify this.

@@ -94,6 +94,7 @@ var Engine = (function(global) {
             enemy.update(dt);
         });
         player.update();
+        star.update();
     }
 
     /* This function initially draws the "game level", it will then call
@@ -148,6 +149,9 @@ var Engine = (function(global) {
      * on your enemy and player entities within app.js
      */
     function renderEntities() {
+        allRocks.forEach(function(rock) {
+            rock.render();
+        });
         /* Loop through all of the objects within the allEnemies array and call
          * the render function you have defined.
          */
@@ -155,6 +159,7 @@ var Engine = (function(global) {
             enemy.render();
         });
 
+        star.render();
         player.render();
     }
 
@@ -174,10 +179,13 @@ var Engine = (function(global) {
         'images/stone-block.png',
         'images/water-block.png',
         'images/grass-block.png',
+        'images/rock.png',
         'images/enemy-bug-red.png',
         'images/enemy-bug-green.png',
         'images/enemy-bug-blue.png',
-        'images/char-boy.png'
+        'images/char-boy.png',
+        'images/selector.png',
+        'images/star.png'
     ]);
     Resources.onReady(init);
 
