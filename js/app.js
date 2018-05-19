@@ -70,6 +70,7 @@ class Player {
     this.y = 560;
   }
 
+  // input checks if player step on rock, and if so takes it back
   handleInput(key) {
     if (key === 'left' && this.x >= 101) {
       this.x = this.x - 101;
@@ -97,6 +98,7 @@ class Player {
     }
   }
 
+  // if player on water, not on fiish gate, he loses
   update() {
     if (this.y < 0 && this.x !== gate.x) {
       lost();
@@ -133,13 +135,14 @@ class Star {
   }
 
   update() {
+    // check for star/player collision
     if (!this.picked) {
       let diffY = player.y - star.y;
       let diffX = player.x - star.x;
       if (-60 < diffY && diffY < 60 && -50 < diffX && diffX < 70) {
         this.picked = true;
       }
-    } else {
+    } else {  //then star "travels" with player
       this.x = player.x;
       this.y = player.y;
     }
@@ -203,7 +206,7 @@ spawnRocks();
 
 // Place all enemy objects in an array called allEnemies
 var allEnemies = [];
-var spawning;
+let spawning;
 
 function spawnEnemies() {
   const randomEnemy = Math.floor(Math.random() * 10);
@@ -277,19 +280,18 @@ function win() {
   lvlsDone.textContent = `Levels completed: ${won}`;
 
   const newStar = document.createElement('p');
-  newStar.textContent = '★';
+  newStar.textContent = '★ ';
   starBoard.appendChild(newStar);
 
   player.x = 404;
   player.y = 560;
   spawnRocks();
   createStar();
+  createGate();
 }
 
 function lost() {
-  console.log('LosT!!!');
-
-  if(keyboardOn) {
+    if(keyboardOn) {
     document.removeEventListener('keydown', keysAllowed);
     keyboardOn = false;
   }
@@ -308,15 +310,18 @@ function restart() {
   modalFinish.classList.add('hidden');
 
   won = 0;
-  starBoard.innerHTML = '<p>Stars collected:</p>';
+  starBoard.innerHTML = '<p>Stars collected: </p>';
 
   player.x = 404;
   player.y = 560;
   spawnRocks();
   createStar();
+  createGate();
+
   if (!keyboardOn) {
     document.addEventListener('keydown', keysAllowed);
     keyboardOn = true;
   }
+
   spawning = window.setInterval(spawnEnemies, 1000);
 }
