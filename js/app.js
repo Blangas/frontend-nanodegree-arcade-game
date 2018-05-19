@@ -100,6 +100,8 @@ class Player {
   update() {
     if (this.y < 0 && this.x !== gate.x) {
       lost();
+    } else if (this.y < 0 && this.x === gate.x) {
+      win();
     }
   }
 
@@ -156,9 +158,6 @@ class Gate {
     this.y = -40;
   }
 
-  update() {
-  }
-
   render() {
     if (star.picked) {
       ctx.drawImage(Resources.get(this.sprite), this.x, this.y);
@@ -204,6 +203,8 @@ spawnRocks();
 
 // Place all enemy objects in an array called allEnemies
 var allEnemies = [];
+var spawning;
+
 function spawnEnemies() {
   const randomEnemy = Math.floor(Math.random() * 10);
   const randomLine = Math.floor(Math.random() * 6) * 83 + 57;
@@ -217,7 +218,6 @@ function spawnEnemies() {
   }
   allEnemies.push(newEnemy);
 }
-var spawning = window.setInterval(spawnEnemies, 1000);
 
 // Place the player object in a variable called player
 var player = new Player();
@@ -245,21 +245,13 @@ function createGate() {
 createGate();
 
 
-function won() {
-
-}
-
-function lost() {
-  player.x = 404;
-  player.y = 560;
-  spawnRocks();
-  createStar();
-}
 
 
 // This listens for key presses and sends the keys to your
 // Player.handleInput() method. You don't need to modify this.
-document.addEventListener('keydown', function(e) {
+let keyboardOn = false;
+
+function keysAllowed(e) {
   var allowedKeys = {
     37: 'left',
     38: 'up',
@@ -268,4 +260,63 @@ document.addEventListener('keydown', function(e) {
   };
   console.log(allowedKeys[e.keyCode]);
   player.handleInput(allowedKeys[e.keyCode]);
-});
+}
+
+
+
+// Win & Lose
+const lvlsDone = document.querySelector('.lvls-done');
+const starBoard = document.querySelector('.star-board');
+const modalStart = document.querySelector('.modal-start');
+const modalFinish = document.querySelector('.modal-finish');
+
+let won = 0;
+
+function win() {
+  won = won +1;
+  lvlsDone.textContent = `Levels completed: ${won}`;
+
+  const newStar = document.createElement('p');
+  newStar.textContent = '★';
+  starBoard.appendChild(newStar);
+
+  player.x = 404;
+  player.y = 560;
+  spawnRocks();
+  createStar();
+}
+
+function lost() {
+  console.log('LosT!!!');
+
+  if(keyboardOn) {
+    document.removeEventListener('keydown', keysAllowed);
+    keyboardOn = false;
+  }
+
+  window.clearInterval(spawning);
+  spawning = null;
+  allEnemies = [];
+
+  modalFinish.classList.remove('hidden');
+}
+
+function restart() {
+  if (!modalStart.classList.contains('hidden')) {
+    modalStart.classList.add('hidden');
+  }
+  modalFinish.classList.add('hidden');
+
+  won = 0;
+  starBoard.innerHTML = '<p>Stars collected:</p>';
+
+  player.x = 404;
+  player.y = 560;
+  spawnRocks();
+  createStar();
+  if (!keyboardOn) {
+    document.addEventListener('keydown', keysAllowed);
+    keyboardOn = true;
+  }
+  spawning = window.setInterval(spawnEnemies, 1000);
+}
