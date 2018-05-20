@@ -44,9 +44,6 @@ class EnemyFast extends Enemy {
     this.sprite = 'images/enemy-bug-green.png';
     this.speed = Math.random() * 100 + 140;
   }
-
-  update(dt) { super.update(dt); }
-  render() { super.render(); }
 }
 
 class EnemySlow extends Enemy {
@@ -55,9 +52,6 @@ class EnemySlow extends Enemy {
     this.sprite = 'images/enemy-bug-blue.png';
     this.speed = Math.random() * 40 + 10;
   }
-
-  update(dt) { super.update(dt); }
-  render() { super.render(); }
 }
 
 // Now write your own player class
@@ -155,9 +149,9 @@ class Star {
 
 // level finish doors
 class Gate {
-  constructor(x) {
+  constructor() {
     this.sprite = 'images/selector.png';
-    this.x = x;
+    this.x = Math.floor(Math.random() * 9) * 101;
     this.y = -40;
   }
 
@@ -240,12 +234,7 @@ function createStar() {
 }
 createStar();
 
-var gate;
-function createGate() {
-  const randomCol = Math.floor(Math.random() * 9) * 101;
-  gate = new Gate(randomCol);
-}
-createGate();
+var gate = new Gate();
 
 
 
@@ -255,6 +244,7 @@ createGate();
 let keyboardOn = false;
 
 function keysAllowed(e) {
+  e.preventDefault();
   var allowedKeys = {
     37: 'left',
     38: 'up',
@@ -287,7 +277,7 @@ function win() {
   player.y = 560;
   spawnRocks();
   createStar();
-  createGate();
+  gate = new Gate();
 }
 
 function lost() {
@@ -316,7 +306,7 @@ function restart() {
   player.y = 560;
   spawnRocks();
   createStar();
-  createGate();
+  gate = new Gate();
 
   if (!keyboardOn) {
     document.addEventListener('keydown', keysAllowed);
